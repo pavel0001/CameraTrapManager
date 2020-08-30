@@ -8,9 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.*;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,11 +33,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     RecyclerView recyclerView;
     public static ArrayList<TrapList> trapList;
+    public static LatLng pos;
     public static MyRecyclerViewAdapter adapter;
     View.OnClickListener onClck;
     private static final int MY_PERMISSIONS_REQUEST_CODE =0 ;
     FloatingActionButton btnAdd;
     SmsManager smsManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +93,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 String number = data.getStringExtra("number");
-                trapList.add(new TrapList(number, "null"));
+                /*Double lat = Double.parseDouble(data.getStringExtra("lat"));
+                Double longi = Double.parseDouble(data.getStringExtra("longi"));*/
+                if(pos != null) {
+                    trapList.add(new TrapList(number, pos));
+                }
+                else {
+                    trapList.add(new TrapList(number, new LatLng(0, 0)));
+                }
+
                 adapter.notifyDataSetChanged();
             }
             else {
@@ -112,34 +126,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     class MyViewHolder extends ViewHolder{
+        LinearLayout allLayout;
         TextView txtLabel, txtBat, txtStor, txtSignal, txtPos;
         ImageButton btnRef;
         ImageView imgIcon;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            allLayout = (LinearLayout) findViewById(R.id.allLayout);
             txtLabel = (TextView) itemView.findViewById(R.id.txtLabel);
             txtBat = (TextView) itemView.findViewById(R.id.txtBat);
             txtStor = (TextView) itemView.findViewById(R.id.txtStor);
             txtSignal = (TextView) itemView.findViewById(R.id.txtSignal);
             txtPos = (TextView) itemView.findViewById(R.id.txtPos);
             btnRef = (ImageButton) itemView.findViewById(R.id.btnRef);
-            //btnRef.setOnClickListener(this);
             imgIcon = (ImageView) itemView.findViewById(R.id.imgIcon);
         }
     }
     class MyRecyclerViewAdapter extends Adapter<MyViewHolder>{
-
+        private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                int itemPosition = recyclerView.getChildLayoutPosition(view);
+                Intent intent = new Intent(getApplicationContext(), IndividualCameraActivity.class);
+                intent.putExtra("position",itemPosition );
+                startActivity(intent);
+            }
+        };
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item, parent, false);
+            view.setOnClickListener(mOnClickListener);
             final MyViewHolder myViewHolder = new MyViewHolder(view);
             onClck = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     String tmp = String.valueOf(myViewHolder.getAdapterPosition());
-                    if(myViewHolder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    if (myViewHolder.getAdapterPosition() != RecyclerView.NO_POSITION) {
                         refreshCamera(trapList.get(myViewHolder.getAdapterPosition()).number);
                     }
                 }
@@ -153,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TrapList elementsList = trapList.get(holder.getAdapterPosition());
         holder.txtLabel.setText(elementsList.number);
         holder.txtBat.setText(elementsList.battery);
-        holder.txtPos.setText(elementsList.location);
         holder.txtSignal.setText(elementsList.signal);
         holder.txtStor.setText(elementsList.storage);
         holder.imgIcon.setImageResource(R.mipmap.ic_launcher_cameratrap_foreground);

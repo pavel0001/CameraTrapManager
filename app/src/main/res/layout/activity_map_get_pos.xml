@@ -1,22 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
-    <Button
-        android:id="@+id/btnTest"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/test">
-    </Button>
+        android:background="#61833E"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#416026"
+            android:text="Add"
+            android:textColor="#EDB714"></Button>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latitude" />
+
+        <EditText
+            android:id="@+id/edtLat"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#EDB714"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Longitude" />
+
+        <EditText
+            android:id="@+id/edtLong"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#EDB714"
+            android:ems="10"
+            android:inputType="textPersonName" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#61833E"
+        android:gravity="center"
+        android:text="Сlick on the place on the map where your camera is"
+        android:textSize="16sp"
+        android:textStyle="italic" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
+        map:cameraZoom="8"
+        map:mapType="hybrid"
+        map:uiCompass="true"
+        map:cameraTargetLat="54"
+        map:cameraTargetLng="28"
+        map:uiZoomControls="true"
         tools:context=".MapActivityGetPos"/>
 
 </LinearLayout>

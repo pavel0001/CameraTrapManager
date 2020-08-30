@@ -56,27 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="number"
-            android:maxLength="2"
+            android:inputType="numberDecimal"
+            android:maxLength="7"
             android:textStyle="normal" />
-
-        <EditText
-            android:id="@+id/edtMinFirst"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:maxLength="2"
-            android:inputType="number" />
-
-        <EditText
-            android:id="@+id/edtSecFirst"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:maxLength="2"
-            android:inputType="number" />
 
         <TextView
             android:id="@+id/textView3"
@@ -91,26 +73,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:maxLength="2"
-            android:inputType="number" />
-
-        <EditText
-            android:id="@+id/edtMinSecnd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:maxLength="2"
-            android:inputType="number" />
-
-        <EditText
-            android:id="@+id/edtSecSecnd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:maxLength="2"
-            android:inputType="number" />
+            android:inputType="numberDecimal"
+            android:maxLength="7" />
 
         <ImageButton
             android:id="@+id/btnMap"

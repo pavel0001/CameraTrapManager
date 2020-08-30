@@ -13,8 +13,6 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,13 +20,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".IndividualCameraActivity"></activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD7U4U1p9U5osHIQbEh6PVOts57toy4KJ8"/>
+            android:value="AIzaSyD7U4U1p9U5osHIQbEh6PVOts57toy4KJ8" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-        <activity android:name=".MapActivityGetPos"></activity>
+
+        <activity android:name=".MapActivityGetPos" />
         <activity
             android:name=".ActivityAddCamera"
             android:label="@string/app_add_camera"

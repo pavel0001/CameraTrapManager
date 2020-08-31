@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CameraTrapManager</string>
     <string name="app_add_camera">Add a new camera</string>
-    <string name="app_hint_number">+375251112233</string>
+    <string name="app_hint_number">+3751112233</string>
     <string name="test">Test</string>
+    <string name="app_individual_camera">Camera settings</string>
 </resources>

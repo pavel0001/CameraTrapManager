@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView.*;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import android.provider.Telephony.Mms;
 import android.Manifest;
 import android.app.Application;
 import android.content.Intent;
@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     View.OnClickListener onClck;
     private static final int MY_PERMISSIONS_REQUEST_CODE =0 ;
     FloatingActionButton btnAdd;
-    SmsManager smsManager;
+    public static SmsManager smsManager;
+
 
 
 
@@ -55,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(adapter);
         smsManager = SmsManager.getDefault();
         /*trapList.add(new TrapList("375251112233","53 27 32 - 29 32 11"));
-        trapList.add(new TrapList("375251112234","53 01 54 - 28 32 11"));
-        trapList.add(new TrapList("375251112235","54 27 32 - 29 32 11"));*/
+        trapList.add(new TrapList("375251112234","53 01 54 - 28 32 11"));*/
+       // trapList.add(new TrapList("375255247608",new LatLng(54,28)));
         Log.d("My_Log","onCreate MainActivity" );
         int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
         int permissionStatusReceive = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
@@ -71,6 +72,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -114,8 +121,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void refreshCamera(String number){
         Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
-
         smsManager.sendTextMessage(number, null, "*160#", null, null);
+
+    }
+    public static void sendCommandToCamera(String number, String command){
+        smsManager.sendTextMessage(number, null, command, null, null);
+
     }
     public static boolean haveTrapListNumber(String number){
         for(TrapList x: trapList){

@@ -2,10 +2,13 @@ package com.example.cameratrapmanager;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+
 public class TrapList {
     String number;
     String signal, storage, battery;
     private LatLng pos;
+    private ArrayList<String> logCommand;
     public TrapList(String number){
         this.number = number;
         this.signal = "0";
@@ -19,6 +22,7 @@ public class TrapList {
         this.storage = "0";
         this.battery = "0";
         this.pos = pos;
+        logCommand = new ArrayList<String>();
     }
 
     public void setNumber(String number) {
@@ -39,6 +43,9 @@ public class TrapList {
     public void setPos(LatLng pos){
         this.pos = pos;
     }
+    public void setLogCommand(ArrayList<String> logCommand){
+        this.logCommand = logCommand;
+    }
 
     public String getNumber() {
         return number;
@@ -56,4 +63,16 @@ public class TrapList {
         return battery;
     }
     public LatLng getPos(){ return pos; }
+    public ArrayList<String> getLogCommand(){
+        return logCommand;
+    }
+    public void addLogCommand(String log){
+        this.logCommand.add(0,log);
+        if(this.logCommand.size() > 6){
+            logCommand.remove(6);
+        }
+    }
+    public void clearLogCommand(){
+        logCommand.removeAll(logCommand);
+    }
 }

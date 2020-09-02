@@ -17,22 +17,34 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="1"
             android:text="Sim number"
             android:textColor="#1A320B"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edtNumber"
-            android:hint="@string/app_hint_number"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:maxLength="13"
-            android:inputType="phone" />
+            android:hint="@string/app_hint_number"
+            android:inputType="phone"
+            android:maxLength="13" />
+
+        <ImageButton
+            android:id="@+id/imgBtnContacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="16dp"
+            android:layout_weight="1"
+            android:backgroundTint="#61833E"
+            app:srcCompat="@drawable/ic_action_add_contacts" />
+
+
     </LinearLayout>
 
     <LinearLayout

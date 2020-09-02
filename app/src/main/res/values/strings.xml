@@ -4,4 +4,5 @@
     <string name="app_hint_number">+3751112233</string>
     <string name="test">Test</string>
     <string name="app_individual_camera">Camera settings</string>
+    <string name="add_camera_label_text">Add new camera</string>
 </resources>

@@ -50,10 +50,9 @@ public class MapActivityGetPos extends AppCompatActivity implements OnMapReadyCa
         View.OnClickListener onClck = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(cursor.getPosition()!=null) {
+                if(cursor != null && flag) {
                     Intent intent = new Intent();
-                    /*intent.putExtra("lat", (double) cursor.getPosition().latitude);
-                    intent.putExtra("longi", (double) cursor.getPosition().longitude);*/
+                    Log.d("MyTag", cursor.getPosition().toString());
                     MainActivity.pos = cursor.getPosition();
                     setResult(RESULT_OK, intent);
                     finish();
@@ -78,6 +77,7 @@ public class MapActivityGetPos extends AppCompatActivity implements OnMapReadyCa
                     .position(places.get(i));
             googleMap.addMarker(markers[i]);
         }*/
+
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override

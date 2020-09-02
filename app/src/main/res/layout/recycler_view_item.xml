@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/allLayout"
+    android:id="@+id/imgBtnDelete"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:background="#61833E"
@@ -153,6 +153,19 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/imageView6"
                 app:layout_constraintTop_toBottomOf="@+id/txtBat" />
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="#781D1D"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/txtPos"
+                app:layout_constraintTop_toBottomOf="@+id/btnRef"
+                app:srcCompat="@drawable/ic_action_delete" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

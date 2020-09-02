@@ -7,12 +7,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.*;
-import com.bumptech.glide.Glide;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.provider.Telephony.Mms;
+
 import android.Manifest;
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -28,14 +27,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     RecyclerView recyclerView;
     public static ArrayList<TrapList> trapList;
     public static LatLng pos;
     public static MyRecyclerViewAdapter adapter;
-    View.OnClickListener onClck;
+    View.OnClickListener onClck, onClckDelete;
     private static final int MY_PERMISSIONS_REQUEST_CODE =0 ;
     FloatingActionButton btnAdd;
     public static SmsManager smsManager;
@@ -70,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Manifest.permission.ACCESS_FINE_LOCATION
             }, MY_PERMISSIONS_REQUEST_CODE);
         }
+        if(trapList.isEmpty()) {
+            addCameraToList();
+        }
 
 
     }
@@ -84,8 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.btnAdd:
-                Intent intent = new Intent(this, ActivityAddCamera.class);
-                startActivityForResult(intent, 1);
+                addCameraToList();
                 break;
             default:
                 break;
@@ -128,6 +128,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         smsManager.sendTextMessage(number, null, command, null, null);
 
     }
+    public void addCameraToList(){
+        Intent intent = new Intent(this, ActivityAddCamera.class);
+        startActivityForResult(intent, 1);
+    }
     public static boolean haveTrapListNumber(String number){
         for(TrapList x: trapList){
             if(x.number.equals(number))
@@ -135,15 +139,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return false;
     }
+    private void deleteCamera(int position){
+        trapList.remove(position);
+        adapter.notifyDataSetChanged();
+    }
+
 
     class MyViewHolder extends ViewHolder{
         LinearLayout allLayout;
         TextView txtLabel, txtBat, txtStor, txtSignal, txtPos;
-        ImageButton btnRef;
+        ImageButton btnRef, btnDelete;
         ImageView imgIcon;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            allLayout = (LinearLayout) findViewById(R.id.allLayout);
+            allLayout = (LinearLayout) findViewById(R.id.imgBtnDelete);
             txtLabel = (TextView) itemView.findViewById(R.id.txtLabel);
             txtBat = (TextView) itemView.findViewById(R.id.txtBat);
             txtStor = (TextView) itemView.findViewById(R.id.txtStor);
@@ -151,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             txtPos = (TextView) itemView.findViewById(R.id.txtPos);
             btnRef = (ImageButton) itemView.findViewById(R.id.btnRef);
             imgIcon = (ImageView) itemView.findViewById(R.id.imgIcon);
+            btnDelete = (ImageButton) itemView.findViewById(R.id.btnDelete);
         }
     }
     class MyRecyclerViewAdapter extends Adapter<MyViewHolder>{
@@ -179,6 +189,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             };
+            onClckDelete = new View.OnClickListener(){
+
+                @Override
+                public void onClick(View view) {
+                    deleteCamera(myViewHolder.getAdapterPosition());
+                }
+            };
+            myViewHolder.btnDelete.setOnClickListener(onClckDelete);
             myViewHolder.btnRef.setOnClickListener(onClck);
             return myViewHolder;
         }

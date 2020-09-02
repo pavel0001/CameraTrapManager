@@ -20,22 +20,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".IndividualCameraActivity"
-            android:label="@string/app_individual_camera"
-            ></activity>
-
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD7U4U1p9U5osHIQbEh6PVOts57toy4KJ8" />
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyD7U4U1p9U5osHIQbEh6PVOts57toy4KJ8" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <activity android:name=".IndividualCameraActivity"></activity>
         <activity android:name=".MapActivityGetPos" />
-        <activity
-            android:name=".ActivityAddCamera"
-            android:label="@string/app_add_camera"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity android:name=".ActivityAddCamera"
+            android:theme="@style/AppThemeDialog"
+            android:label="@string/add_camera_label_text" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,7 +39,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <receiver android:name=".SmsReceiver">
             <intent-filter android:priority="100">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />

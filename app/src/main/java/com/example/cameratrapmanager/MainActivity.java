@@ -35,8 +35,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static MyRecyclerViewAdapter adapter;
     View.OnClickListener onClck, onClckDelete;
     private static final int MY_PERMISSIONS_REQUEST_CODE =0 ;
+    public static final  String TAG = "MyLog";
+    public static int FIRST_SWOU_ADD_DIALOG = 0;
     FloatingActionButton btnAdd;
     public static SmsManager smsManager;
+    MyDao myDao;
+    TrapListDatabase db;
 
 
 
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = TrapListDatabase.getDatabase(this);
+        myDao = db.myDao();
         trapList = new ArrayList<TrapList>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         btnAdd = (FloatingActionButton) findViewById(R.id.btnAdd);
@@ -53,10 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter = new MyRecyclerViewAdapter();
         recyclerView.setAdapter(adapter);
         smsManager = SmsManager.getDefault();
-        /*trapList.add(new TrapList("375251112233","53 27 32 - 29 32 11"));
-        trapList.add(new TrapList("375251112234","53 01 54 - 28 32 11"));*/
-       // trapList.add(new TrapList("375255247608",new LatLng(54,28)));
-        Log.d("My_Log","onCreate MainActivity" );
+        Log.d(TAG,"onCreate MainActivity" );
         int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
         int permissionStatusReceive = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS);
         if (permissionStatus == PackageManager.PERMISSION_GRANTED || permissionStatusReceive == PackageManager.PERMISSION_GRANTED) {
@@ -68,17 +71,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Manifest.permission.ACCESS_FINE_LOCATION
             }, MY_PERMISSIONS_REQUEST_CODE);
         }
-        if(trapList.isEmpty()) {
-            addCameraToList();
-        }
+
 
 
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG,"onStart mainActivity" );
+        //for(TrapList x: trapList)
+        if( ! trapList.isEmpty()) {
+            for(TrapList x: trapList)
+            myDao.updateTrap(x);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG,"onResume MainActivity" );
+        try {
+            if (myDao != null) {
+                ArrayList<TrapList> tmp = (ArrayList<TrapList>) myDao.getAll();
+                trapList.clear();
+                for( TrapList x: tmp){
+                    trapList.add(new TrapList(x));
+                }
+            }
+        }
+        catch (Exception e){
+            Log.d(TAG, "Error load DB");
+        }
         adapter.notifyDataSetChanged();
+      if(trapList.isEmpty() && FIRST_SWOU_ADD_DIALOG == 0) {
+            addCameraToList();
+          FIRST_SWOU_ADD_DIALOG = 1;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "DB save");
+        db.close();
     }
 
     @Override
@@ -106,10 +147,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     trapList.add(new TrapList(number, pos));
                 }
                 else {
-                    trapList.add(new TrapList(number, new LatLng(0, 0)));
+                    trapList.add(new TrapList(number));
                 }
-
-                adapter.notifyDataSetChanged();
+                if( ! trapList.isEmpty()) {
+                    myDao.insertAll(trapList.get(trapList.size() - 1));
+                    adapter.notifyDataSetChanged();
+                }
             }
             else {
                 Toast.makeText(this, "Cancel",Toast.LENGTH_SHORT).show();
@@ -134,14 +177,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public static boolean haveTrapListNumber(String number){
         for(TrapList x: trapList){
-            if(x.number.equals(number))
+            if(x.getNumber().equals(number))
                 return true;
         }
         return false;
     }
     private void deleteCamera(int position){
-        trapList.remove(position);
-        adapter.notifyDataSetChanged();
+        if(position < trapList.size() && trapList.size() > 0) {
+            if(trapList.get(position) != null) {
+                myDao.delete(trapList.get(position));
+                trapList.remove(position);
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
 
@@ -185,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     String tmp = String.valueOf(myViewHolder.getAdapterPosition());
                     if (myViewHolder.getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        refreshCamera(trapList.get(myViewHolder.getAdapterPosition()).number);
+                        refreshCamera(trapList.get(myViewHolder.getAdapterPosition()).getNumber());
                     }
                 }
             };
@@ -204,11 +252,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         TrapList elementsList = trapList.get(holder.getAdapterPosition());
-        holder.txtLabel.setText(elementsList.number);
-        holder.txtBat.setText(elementsList.battery);
-        holder.txtSignal.setText(elementsList.signal);
-        holder.txtStor.setText(elementsList.storage);
+        holder.txtLabel.setText(elementsList.getNumber());
+        holder.txtBat.setText(elementsList.getBattery());
+        holder.txtSignal.setText(elementsList.getSignal());
+        holder.txtStor.setText(elementsList.getStorage());
         holder.imgIcon.setImageResource(R.mipmap.ic_launcher_cameratrap_foreground);
+        //myDao.updateTrap(elementsList);
+
 
         }
 

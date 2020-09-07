@@ -37,7 +37,7 @@ public class SmsReceiver extends BroadcastReceiver {
     }
     public boolean numberIsCamera(String number){
         for(TrapList x: MainActivity.trapList){
-            if(number.equalsIgnoreCase(x.number)) return true;
+            if(number.equalsIgnoreCase(x.getNumber())) return true;
 
         }
         return false;
@@ -48,7 +48,7 @@ public class SmsReceiver extends BroadcastReceiver {
         ArrayList<TrapList> list = MainActivity.trapList;
         int listIndex = 0;
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).number.equals(number))
+            if (list.get(i).getNumber().equals(number))
                 listIndex = i;                // index of camera trap who send answer
         }
 

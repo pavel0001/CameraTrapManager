@@ -3,6 +3,7 @@ package com.example.cameratrapmanager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +36,7 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         setContentView(R.layout.activity_individual_camera);
         position = getIntent().getIntExtra("position",0);
         txtViewLabel = (TextView) findViewById(R.id.txtViewLabel);
-        cameraNumber = MainActivity.trapList.get(position).number;
+        cameraNumber = MainActivity.trapList.get(position).getNumber();
         txtViewLabel.setText(cameraNumber);// Set text to number camera
 
         btnTakePhoto = (Button) findViewById(R.id.btnTakePhoto);//Send message *500# to camera and take new photo
@@ -138,9 +139,10 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
                 }
                 break;
             case R.id.btnTakePhoto:
-                command = "*500#";
-                MainActivity.sendCommandToCamera(cameraNumber, command);
-                savedInLog("Take photo.");
+                //command = "*500#";
+                //MainActivity.sendCommandToCamera(cameraNumber, command);
+                MainActivity.trapList.get(position).setStatusToTesting();
+                savedInLog("Set status.");
                 break;
             case R.id.btnDelete:
                 edtLog.setText("");
@@ -155,9 +157,11 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         DateFormat df = new SimpleDateFormat("[dd.MM.YY hh:mm]: ");
         String date = df.format(Calendar.getInstance().getTime());
         MainActivity.trapList.get(position).addLogCommand(date+command+"\n");
+        Log.d("MyLog","addLogCommand: "+date+command+"\n" );
     }
     public void notifyLog(){
         ArrayList<String> tmp = MainActivity.trapList.get(position).getLogCommand();
+        Log.d("MyLog","notifyLog: "+tmp.toString() );
         String tmpSec = "";
         edtLog.setText("");
         for(String x: tmp){

@@ -3,6 +3,8 @@ package com.example.cameratrapmanager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,29 +14,34 @@ import java.util.ArrayList;
 
 
 public class SmsReceiver extends BroadcastReceiver {
+    private final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
         if (intent != null && intent.getAction() != null ) {
-
-            Object[] pduArray = (Object[]) intent.getExtras().get("pdus");
-            SmsMessage[] messages = new SmsMessage[pduArray.length];
-            for (int i = 0; i < pduArray.length; i++) {
-                messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
-            }
-            String sms_from = messages[0].getDisplayOriginatingAddress();
-            if (numberIsCamera(sms_from)) {
-                StringBuilder bodyText = new StringBuilder();
-                for (int i = 0; i < messages.length; i++) {
-                    bodyText.append(messages[i].getMessageBody());
+            if (intent.getAction().equals(SMS_RECEIVED)) {
+                Toast.makeText(context,"Received SmS",Toast.LENGTH_LONG).show();
+                Object[] pduArray = (Object[]) intent.getExtras().get("pdus");
+                SmsMessage[] messages = new SmsMessage[pduArray.length];
+                for (int i = 0; i < pduArray.length; i++) {
+                    messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
                 }
-                String body = bodyText.toString();
-                messageSeparate(body, sms_from);
-                abortBroadcast();
-            }
+                String sms_from = messages[0].getDisplayOriginatingAddress();
+                if (numberIsCamera(sms_from)) {
+                    StringBuilder bodyText = new StringBuilder();
+                    for (int i = 0; i < messages.length; i++) {
+                        bodyText.append(messages[i].getMessageBody());
+                    }
+                    String body = bodyText.toString();
+                    messageSeparate(body, sms_from);
+                    abortBroadcast();
+                }
 
+            }
         }
     }
+
     public boolean numberIsCamera(String number){
         for(TrapList x: MainActivity.trapList){
             if(number.equalsIgnoreCase(x.getNumber())) return true;

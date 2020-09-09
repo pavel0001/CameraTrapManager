@@ -76,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             ActivityCompat.requestPermissions(this, new String[] {
                     Manifest.permission.RECEIVE_SMS,
+                    Manifest.permission.RECEIVE_MMS,
+                    Manifest.permission.RECEIVE_WAP_PUSH,
                     Manifest.permission.READ_SMS,
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.ACCESS_FINE_LOCATION

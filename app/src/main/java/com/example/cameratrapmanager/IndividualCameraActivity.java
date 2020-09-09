@@ -71,6 +71,13 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         btnTakePhoto.setOnClickListener(this);
 
 
+
+        notifyLog();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         final LoadLastMmsImage loader = new LoadLastMmsImage(getApplicationContext());
         if (ourTrap.getUri() == null) {
             Handler handler = new Handler(Looper.getMainLooper());
@@ -86,7 +93,6 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         } else {
             loadImg(Uri.parse(ourTrap.getUri()));
         }
-        notifyLog();
     }
 
     @Override
@@ -166,10 +172,9 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
                 }
                 break;
             case R.id.btnTakePhoto:
-                //command = "*500#";
-                //MainActivity.sendCommandToCamera(cameraNumber, command);
-                MainActivity.trapList.get(position).setStatusToTesting();
-                savedInLog("Set status.");
+                command = "*500#";
+                MainActivity.sendCommandToCamera(cameraNumber, command);
+                savedInLog("Take photo");
                 break;
             case R.id.btnDelete:
                 edtLog.setText("");

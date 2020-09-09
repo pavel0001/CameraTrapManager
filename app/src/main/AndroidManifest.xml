@@ -14,30 +14,36 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_cameratrap_map"
-        android:name="com.example.cameratrapmanager.App"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_cameratrap_map_round"
-        android:supportsRtl="true"
         android:screenOrientation="portrait"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ShowMapWithTrapActivity"></activity>
+
         <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="@string/API_KEY"/>
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/API_KEY" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".IndividualCameraActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MapActivityGetPos"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ActivityAddCamera"
-            android:theme="@style/AppThemeDialog"
+        <activity
+            android:name=".IndividualCameraActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MapActivityGetPos"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityAddCamera"
+            android:label="@string/add_camera_label_text"
             android:screenOrientation="portrait"
-            android:label="@string/add_camera_label_text" />
-        <activity android:name=".MainActivity"
+            android:theme="@style/AppThemeDialog" />
+        <activity
+            android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,6 +51,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver android:name=".SmsReceiver">
             <intent-filter android:priority="100">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />

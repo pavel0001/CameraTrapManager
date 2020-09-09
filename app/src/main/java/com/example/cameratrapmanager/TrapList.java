@@ -1,25 +1,28 @@
 package com.example.cameratrapmanager;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 @Entity
+@TypeConverters({Converters.class})
 public class TrapList {
     @NonNull
     @PrimaryKey
     private String number;
     private String signal, storage, battery;
     private Double latitude, longitude;
+    private String uri;
     @Ignore
     private LatLng pos;
-    @Ignore
     private ArrayList<String> logCommand;
     public TrapList(String number){
         this.number = number;
@@ -56,8 +59,9 @@ public class TrapList {
         this.battery = x.battery;
         this.latitude = x.latitude;
         this.longitude = x.longitude;
+        this.uri = x.uri;
         this.pos = new LatLng(x.latitude, x.longitude);
-        this.logCommand = new ArrayList<String>();
+        this.logCommand = x.logCommand;
     }
 
     public void setNumber(String number) {
@@ -80,6 +84,14 @@ public class TrapList {
     }
     public void setLogCommand(ArrayList<String> logCommand){
         this.logCommand = logCommand;
+    }
+
+    public String getUri() {
+        return this.uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getNumber() {
@@ -114,6 +126,7 @@ public class TrapList {
     public ArrayList<String> getLogCommand(){
         return logCommand;
     }
+
     public void addLogCommand(String log) {
         Log.d("MyLog","AddLogCmd: "+ log);
         if (log == null) {

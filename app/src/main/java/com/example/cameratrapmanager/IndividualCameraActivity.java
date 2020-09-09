@@ -2,7 +2,11 @@ package com.example.cameratrapmanager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +16,9 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.example.cameratrapmanager.MmsLoader.LoadLastMmsImage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,11 +37,14 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
     ImageView imgLastPhoto;
     EditText edtPhone, edtLog;
     RadioGroup rGrPir, rGrNumber;
+    TrapList ourTrap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_individual_camera);
-        position = getIntent().getIntExtra("position",0);
+        //final TrapList ourTrap = MainActivity.trapList.get(position);
+        position = getIntent().getIntExtra("position", 0);
+        ourTrap = MainActivity.trapList.get(position);
         txtViewLabel = (TextView) findViewById(R.id.txtViewLabel);
         cameraNumber = MainActivity.trapList.get(position).getNumber();
         txtViewLabel.setText(cameraNumber);// Set text to number camera
@@ -59,7 +69,24 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         btnSetPir.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
         btnTakePhoto.setOnClickListener(this);
-        imgLastPhoto.setImageResource(R.mipmap.ic_launcher_cameratrap_map_foreground);
+
+
+        final LoadLastMmsImage loader = new LoadLastMmsImage(getApplicationContext());
+        if (ourTrap.getUri() == null) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    Uri imgUri = loader.writeAllMms(cameraNumber);
+                    loadImg(imgUri);
+
+                }
+            };
+            handler.post(run);
+        } else {
+            loadImg(Uri.parse(ourTrap.getUri()));
+        }
+        notifyLog();
     }
 
     @Override
@@ -168,5 +195,13 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
             tmpSec += x;
         }
         edtLog.setText(tmpSec);
+    }
+    public void loadImg(Uri img){
+        Glide
+                .with(this)
+                .load(img)
+                .placeholder(R.mipmap.ic_launcher_cameratrap_foreground)
+                .into(imgLastPhoto);
+        ourTrap.setUri(img.toString());
     }
 }

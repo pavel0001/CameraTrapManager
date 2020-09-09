@@ -8,14 +8,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.*;
 
+import com.example.cameratrapmanager.MmsLoader.LoadLastMmsImage;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.telephony.SmsManager;
+
+import android.provider.Telephony.Mms.Inbox;
+import android.provider.Telephony.Mms;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,10 +53,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         db = TrapListDatabase.getDatabase(this);
         myDao = db.myDao();
         trapList = new ArrayList<TrapList>();
@@ -72,8 +82,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }, MY_PERMISSIONS_REQUEST_CODE);
         }
 
-
-
     }
 
     @Override
@@ -85,17 +93,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
         Log.d(TAG,"onStart mainActivity" );
-        //for(TrapList x: trapList)
-        if( ! trapList.isEmpty()) {
-            for(TrapList x: trapList)
-            myDao.updateTrap(x);
-        }
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG,"onResume MainActivity" );
+        if( ! trapList.isEmpty()) {
+            for(TrapList x: trapList)
+                myDao.updateTrap(x);
+        }
         try {
             if (myDao != null) {
                 ArrayList<TrapList> tmp = (ArrayList<TrapList>) myDao.getAll();
@@ -118,8 +127,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "DB save");
-        db.close();
     }
 
     @Override

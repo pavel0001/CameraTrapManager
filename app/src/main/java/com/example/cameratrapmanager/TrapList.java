@@ -1,6 +1,5 @@
 package com.example.cameratrapmanager;
 
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,7 +19,7 @@ public class TrapList {
     private String number;
     private String signal, storage, battery;
     private Double latitude, longitude;
-    private String uri;
+    private volatile String uri;
     @Ignore
     private LatLng pos;
     private ArrayList<String> logCommand;
@@ -86,11 +85,11 @@ public class TrapList {
         this.logCommand = logCommand;
     }
 
-    public String getUri() {
+    public synchronized String getUri() {
         return this.uri;
     }
 
-    public void setUri(String uri) {
+    public synchronized void setUri(String uri) {
         this.uri = uri;
     }
 

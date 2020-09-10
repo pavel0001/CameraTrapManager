@@ -1,29 +1,12 @@
 package com.example.cameratrapmanager;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.*;
-
-import com.example.cameratrapmanager.MmsLoader.LoadLastMmsImage;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.telephony.SmsManager;
-
-import android.provider.Telephony.Mms.Inbox;
-import android.provider.Telephony.Mms;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +16,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import com.example.cameratrapmanager.MmsLoader.LoadLastMmsImage;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -95,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
         Log.d(TAG,"onStart mainActivity" );
-
+        updateImgToAllCameres(this);
 
     }
 
@@ -170,6 +166,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else {
         }
+    }
+    public static void updateImgToAllCameres(Context context){
+        final LoadLastMmsImage loader = new LoadLastMmsImage(context);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < trapList.size(); i++) {
+                        Uri uri = loader.writeAllMms(trapList.get(i).getNumber());
+                        trapList.get(i).setUri(uri.toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+            thread.start();
     }
     public void refreshCamera(String number){
         Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();

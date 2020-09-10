@@ -1,45 +1,19 @@
 package com.example.cameratrapmanager.MmsLoader;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.Telephony;
-import android.provider.UserDictionary;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.MmsSms;
 
-import com.example.cameratrapmanager.IndividualCameraActivity;
-import com.example.cameratrapmanager.MainActivity;
+import androidx.annotation.Nullable;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
-import static android.provider.Telephony.BaseMmsColumns.DATE_SENT;
-import static android.provider.Telephony.BaseMmsColumns.MESSAGE_BOX;
-import static android.provider.Telephony.BaseMmsColumns.CREATOR;
-import static android.provider.Telephony.BaseMmsColumns._ID;
-import static android.provider.Telephony.BaseMmsColumns.MESSAGE_BOX_INBOX;
 import static android.provider.Telephony.BaseMmsColumns.DATE;
+import static android.provider.Telephony.BaseMmsColumns.MESSAGE_BOX;
+import static android.provider.Telephony.BaseMmsColumns.MESSAGE_BOX_INBOX;
+import static android.provider.Telephony.BaseMmsColumns._ID;
 import static android.provider.Telephony.MmsSms.TYPE_DISCRIMINATOR_COLUMN;
 
 public class LoadLastMmsImage extends ContentResolver {
@@ -77,7 +51,7 @@ public class LoadLastMmsImage extends ContentResolver {
                         do {
                             String adr = cursorMmsLevel.getString(cursorMmsLevel.getColumnIndex("address"));
                             Integer type = Integer.parseInt(cursorMmsLevel.getString(cursorMmsLevel.getColumnIndex("type")));
-                            if(adr.equals(TRAP_NUMBER) && type == 137) {
+                            if( adr.equals(TRAP_NUMBER) && type == 137) {
                                 Date date = new Date((long) cursor.getLong(cursor.getColumnIndex(Telephony.BaseMmsColumns.DATE))*1000);
                                 if(date.after(min_date)){
                                     min_date = date;
@@ -93,6 +67,7 @@ public class LoadLastMmsImage extends ContentResolver {
             } while (cursor.moveToNext());
             cursor.close();
             //tmp = getImgMms(min_id);
+            if(min_id != 0)
             uriQ = getImgMms(min_id);
         }
         return uriQ;

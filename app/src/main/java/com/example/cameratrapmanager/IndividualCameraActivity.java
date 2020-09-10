@@ -1,12 +1,7 @@
 package com.example.cameratrapmanager;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,14 +12,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
-import com.example.cameratrapmanager.MmsLoader.LoadLastMmsImage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 public class IndividualCameraActivity extends AppCompatActivity implements View.OnClickListener {
     private String command;
@@ -78,21 +73,13 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
     @Override
     protected void onStart() {
         super.onStart();
-        final LoadLastMmsImage loader = new LoadLastMmsImage(getApplicationContext());
-        if (ourTrap.getUri() == null) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            Runnable run = new Runnable() {
-                @Override
-                public void run() {
-                    Uri imgUri = loader.writeAllMms(cameraNumber);
-                    loadImg(imgUri);
 
-                }
-            };
-            handler.post(run);
-        } else {
-            loadImg(Uri.parse(ourTrap.getUri()));
-        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadImg();
     }
 
     @Override
@@ -201,7 +188,8 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         }
         edtLog.setText(tmpSec);
     }
-    public void loadImg(Uri img){
+    public void loadImg(){
+        Uri img = Uri.parse(ourTrap.getUri());
         Glide
                 .with(this)
                 .load(img)

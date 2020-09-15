@@ -1,20 +1,24 @@
 package com.example.cameratrapmanager;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,34 +29,45 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
     private String command;
     int position;
     boolean flagSmsStatus = true;
+    ViewPager2 viewPager;  //ViewPager
+    TabLayout tabLayout;
     String cameraNumber;
     TextView txtViewLabel;
-    Button btnTakePhoto, btnDelete, btnEnDisSms,btnSetPir;
+    Button btnEnDisSms,btnSetPir;
     ImageButton imgBtnAddDeleteNumber, imgBtnSetTime;
-    ImageView imgLastPhoto;
     EditText edtPhone, edtLog;
     RadioGroup rGrPir, rGrNumber;
     TrapList ourTrap;
+    private FragmentStateAdapter pagerAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_individual_camera);
-        //final TrapList ourTrap = MainActivity.trapList.get(position);
         position = getIntent().getIntExtra("position", 0);
         ourTrap = MainActivity.trapList.get(position);
         txtViewLabel = (TextView) findViewById(R.id.txtViewLabel);
         cameraNumber = MainActivity.trapList.get(position).getNumber();
         txtViewLabel.setText(cameraNumber);// Set text to number camera
+        viewPager = (ViewPager2) findViewById(R.id.viewPager); //ViewPager
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        pagerAdapter = new ScreenSlidePagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
+        TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                tab.setText(String.valueOf(position+1));
+            }
+        });
+        mediator.attach();
 
-        btnTakePhoto = (Button) findViewById(R.id.btnTakePhoto);//Send message *500# to camera and take new photo
-        btnDelete = (Button) findViewById(R.id.btnDelete);// Delete this camera
+
         btnEnDisSms = (Button) findViewById(R.id.btnEnDisSms);// Enabled or disabled sms on camera
         btnSetPir = (Button) findViewById(R.id.btnSetPir);// Change status pir of PIR sensor
 
         imgBtnAddDeleteNumber = (ImageButton) findViewById(R.id.imgBtnAddDeleteNumber);
         imgBtnSetTime = (ImageButton) findViewById(R.id.imgBtnSetTime);
 
-        imgLastPhoto = (ImageView) findViewById(R.id.imgLastPhoto);
+        //imgLastPhoto = (ImageView) findViewById(R.id.imgLastPhoto);
         edtPhone = (EditText) findViewById(R.id.edtPhone);
         rGrPir = (RadioGroup) findViewById(R.id.rGrPir);
         rGrNumber = (RadioGroup) findViewById(R.id.rGrNumber);
@@ -62,9 +77,6 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         imgBtnSetTime.setOnClickListener(this);
         btnEnDisSms.setOnClickListener(this);
         btnSetPir.setOnClickListener(this);
-        btnDelete.setOnClickListener(this);
-        btnTakePhoto.setOnClickListener(this);
-
 
 
         notifyLog();
@@ -79,7 +91,7 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
     @Override
     protected void onResume() {
         super.onResume();
-        loadImg();
+        //loadImg();
     }
 
     @Override
@@ -158,15 +170,6 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
                     MainActivity.sendCommandToCamera(cameraNumber, command);
                 }
                 break;
-            case R.id.btnTakePhoto:
-                command = "*500#";
-                MainActivity.sendCommandToCamera(cameraNumber, command);
-                savedInLog("Take photo");
-                break;
-            case R.id.btnDelete:
-                edtLog.setText("");
-                MainActivity.trapList.get(position).clearLogCommand();
-                break;
             default:
                 break;
         }
@@ -188,13 +191,24 @@ public class IndividualCameraActivity extends AppCompatActivity implements View.
         }
         edtLog.setText(tmpSec);
     }
-    public void loadImg(){
-        Uri img = Uri.parse(ourTrap.getUri());
-        Glide
-                .with(this)
-                .load(img)
-                .placeholder(R.mipmap.ic_launcher_cameratrap_foreground)
-                .into(imgLastPhoto);
-        ourTrap.setUri(img.toString());
+
+    private class ScreenSlidePagerAdapter extends FragmentStateAdapter {
+        public ScreenSlidePagerAdapter(FragmentActivity fa) {
+            super(fa);
+        }
+
+        @Override
+        public Fragment createFragment(int position) {
+            Log.i("MyTag", String.valueOf(position));
+            Log.i("MyTag", ourTrap.getListUri().get(position).toString());
+            return new FragmentImage().newInstance(position, ourTrap.getListUri().get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return ourTrap.getListUri().size();
+        }
     }
+
+
 }

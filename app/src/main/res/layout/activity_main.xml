@@ -10,7 +10,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#1C3914"
+        android:background="@color/primaryLightColor"
         android:orientation="horizontal"
         tools:itemCount="3"
         tools:listitem="@layout/recycler_view_item" />
@@ -23,7 +23,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
         android:clickable="true"
-        app:backgroundTint="#61833E"
+        app:backgroundTint="@color/primaryColor"
         app:maxImageSize="50dp"
         app:srcCompat="@drawable/ic_action_plus" />
 

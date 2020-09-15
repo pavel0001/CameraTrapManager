@@ -1,4 +1,5 @@
 package com.example.cameratrapmanager.MmsLoader;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.provider.Telephony;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import static android.provider.Telephony.BaseMmsColumns.DATE;
@@ -18,18 +20,21 @@ import static android.provider.Telephony.MmsSms.TYPE_DISCRIMINATOR_COLUMN;
 
 public class LoadLastMmsImage extends ContentResolver {
 
+    private static final String TAG = "MyTag" ;
     public static ContentResolver resolver;
     public LoadLastMmsImage(@Nullable Context context) {
         super(context);
         resolver = context.getContentResolver();
     }
 
-    public static Uri writeAllMms(String number) {
+    public static ArrayList<Uri> writeAllMms(String number) {
+       // Log.i(TAG, "writeAllMms");
+        ArrayList<Uri> listUri = new ArrayList<Uri>();
         final String TRAP_NUMBER = number;
         Bitmap tmp = null;
         Uri uriQ = null;
         int min_id=0;
-        Date min_date = new Date(10000);
+        Date min_date = new Date(100);
         //ContentResolver contentResolver = ContentResolver.getContentResolver();
         final String[] projection = new String[]{_ID, TYPE_DISCRIMINATOR_COLUMN, MESSAGE_BOX, DATE};
         Uri uri = Uri.parse("content://mms-sms/complete-conversations/");
@@ -56,6 +61,8 @@ public class LoadLastMmsImage extends ContentResolver {
                                 if(date.after(min_date)){
                                     min_date = date;
                                     min_id = Integer.parseInt(id);
+                                    listUri = loadOnList(listUri,getImgMms(min_id));
+                                    //SimpleDateFormat sForm = new SimpleDateFormat("yyyy.MMM.dd hh:mm");
                                 }
 
                             }
@@ -66,11 +73,8 @@ public class LoadLastMmsImage extends ContentResolver {
 
             } while (cursor.moveToNext());
             cursor.close();
-            //tmp = getImgMms(min_id);
-            if(min_id != 0)
-            uriQ = getImgMms(min_id);
         }
-        return uriQ;
+        return listUri;
     }
     public static Uri getImgMms(int id){
         Bitmap tmp = null;
@@ -92,22 +96,14 @@ public class LoadLastMmsImage extends ContentResolver {
         }
         return Uri.parse("content://mms/part/" + uriR);
     }
-/*    private static Uri getMmsImage(String _id) {
-        Uri partURI = Uri.parse("content://mms/part/" + _id);
-        *//*InputStream is = null;
-        Bitmap bitmap = null;
-        try {
-            is = resolver.openInputStream(partURI);
-            IndividualCameraActivity.uriImg = partURI.toString();
-            bitmap = BitmapFactory.decodeStream(is);
-        } catch (IOException e) {}
-        finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {}
-            }
-        }*//*
-        return partURI;
-    }*/
+    public static ArrayList<Uri> loadOnList(ArrayList<Uri> list, Uri uri){
+        if(list.size()< 10){
+            list.add(0, uri);
+        }
+        else {
+            list.remove(9);
+            list.add(0, uri);
+        }
+        return list;
+    }
 }

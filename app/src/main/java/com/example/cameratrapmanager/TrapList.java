@@ -1,5 +1,6 @@
 package com.example.cameratrapmanager;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,10 @@ public class TrapList {
     private Double latitude, longitude;
     private volatile String uri;
     @Ignore
+    private boolean FLAG_LOAD = false;
+    @Ignore
+    private volatile ArrayList<Uri> listUri;
+    @Ignore
     private LatLng pos;
     private ArrayList<String> logCommand;
     public TrapList(String number){
@@ -29,6 +34,8 @@ public class TrapList {
         this.storage = "0";
         this.battery = "0";
         this.pos = new LatLng(0,0);
+        this.listUri = new ArrayList<Uri>();
+        this.FLAG_LOAD = false;
     }
     public TrapList(String number, LatLng pos){
         this.number = number;
@@ -39,6 +46,8 @@ public class TrapList {
         this.latitude = pos.latitude;
         this.longitude = pos.longitude;
         logCommand = new ArrayList<String>();
+        this.listUri = new ArrayList<Uri>();
+        this.FLAG_LOAD = false;
     }
     public TrapList(String number, Double lat, Double lon){
         this.number = number;
@@ -49,6 +58,8 @@ public class TrapList {
         this.longitude = lon;
         this.pos = new LatLng(lat, lon);
         logCommand = new ArrayList<String>();
+        this.listUri = new ArrayList<Uri>();
+        this.FLAG_LOAD = false;
     }
 
     public TrapList(@NonNull TrapList x) {
@@ -61,6 +72,9 @@ public class TrapList {
         this.uri = x.uri;
         this.pos = new LatLng(x.latitude, x.longitude);
         this.logCommand = x.logCommand;
+        this.listUri = new ArrayList<Uri>();
+        this.FLAG_LOAD = x.FLAG_LOAD;
+
     }
 
     public void setNumber(String number) {
@@ -87,6 +101,14 @@ public class TrapList {
 
     public synchronized String getUri() {
         return this.uri;
+    }
+
+    public synchronized ArrayList<Uri> getListUri() {
+        return listUri;
+    }
+
+    public synchronized void setListUri(ArrayList<Uri> listUri) {
+        this.listUri = listUri;
     }
 
     public synchronized void setUri(String uri) {
@@ -116,6 +138,14 @@ public class TrapList {
     }
 
     public Double getLongitude() { return longitude; }
+
+    public boolean isFLAG_LOAD() {
+        return FLAG_LOAD;
+    }
+
+    public void setFLAG_LOAD(boolean FLAG_LOAD) {
+        this.FLAG_LOAD = FLAG_LOAD;
+    }
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;

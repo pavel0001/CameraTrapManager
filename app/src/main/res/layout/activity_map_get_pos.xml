@@ -9,16 +9,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#61833E"
+        android:background="@color/primaryLightColor"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#416026"
+            android:backgroundTint="@color/primaryColor"
             android:text="Add"
-            android:textColor="#EDB714"></Button>
+            android:textColor="@color/primaryTextColor"></Button>
 
         <TextView
             android:id="@+id/textView"
@@ -30,7 +30,7 @@
             android:id="@+id/edtLat"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#EDB714"
+            android:backgroundTint="@color/primaryTextColor"
             android:ems="10"
             android:inputType="textPersonName" />
 
@@ -44,7 +44,7 @@
             android:id="@+id/edtLong"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#EDB714"
+            android:backgroundTint="@color/primaryTextColor"
             android:ems="10"
             android:inputType="textPersonName" />
     </LinearLayout>
@@ -53,7 +53,7 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#61833E"
+        android:background="@color/primaryLightColor"
         android:gravity="center"
         android:text="Сlick on the place on the map where your camera is"
         android:textSize="16sp"

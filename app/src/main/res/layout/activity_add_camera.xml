@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#61833E"
+    android:background="@color/primaryLightColor"
     android:orientation="vertical"
     tools:context=".ActivityAddCamera">
 
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Sim number"
-            android:textColor="#1A320B"
+            android:textColor="@color/primaryTextColor"
             android:textStyle="bold" />
 
         <EditText
@@ -41,7 +41,7 @@
             android:layout_gravity="center"
             android:layout_marginRight="16dp"
             android:layout_weight="1"
-            android:backgroundTint="#61833E"
+            android:backgroundTint="@color/primaryLightColor"
             app:srcCompat="@drawable/ic_action_add_contacts" />
 
 
@@ -59,7 +59,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="GPS"
-            android:textColor="#1A320B"
+            android:textColor="@color/primaryTextColor"
             android:textStyle="bold" />
 
         <EditText
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#61833E"
+            android:backgroundTint="@color/primaryLightColor"
             app:srcCompat="@drawable/ic_action_location_add" />
     </LinearLayout>
 
@@ -109,11 +109,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#416026"
+            android:backgroundTint="@color/primaryColor"
             android:gravity="center"
             android:text="Cancel"
             android:textAllCaps="false"
-            android:textColor="#830606"
+            android:textColor="#703C3C"
             android:textStyle="italic" />
 
         <Button
@@ -121,12 +121,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#416026"
+            android:backgroundTint="@color/primaryColor"
             android:freezesText="false"
             android:gravity="center"
             android:text="Add"
             android:textAllCaps="false"
-            android:textColor="#2C9306"
+            android:textColor="@color/primaryTextColor"
             android:textStyle="italic" />
     </LinearLayout>
 

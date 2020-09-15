@@ -1,9 +1,5 @@
 package com.example.cameratrapmanager;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,12 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;

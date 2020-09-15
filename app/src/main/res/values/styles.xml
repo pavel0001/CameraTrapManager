@@ -2,21 +2,23 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/primaryLightColor</item>
         <item name="android:windowFullscreen">true</item>
     </style>
     <style name="AppThemeDialog" parent="Theme.AppCompat.DayNight.Dialog.MinWidth">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorBackgroundFloating">@color/colorDark</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/primaryLightColor</item>
+        <item name="colorBackgroundFloating">@color/primaryColor</item>
         <item name="android:windowActionBar">false</item>
-        <item name="android:textColorPrimary">@color/ic_launcher_cameratrap_map_background</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="android:layout_gravity">center</item>
 
+
     </style>
+
 
 </resources>

@@ -1,38 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@color/primaryColor"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_action_back"
+            map:backgroundTint="@color/primaryDarkColor" />
 
         <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:id="@+id/idSpinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            map:cameraTargetLat="54"
-            map:cameraTargetLng="28"
-            map:cameraZoom="8"
-            map:mapType="hybrid"
-            map:uiCompass="true"
-            map:uiZoomControls="true"
-            tools:context=".MapActivityGetPos" />
+            tools:listitem=""
+            android:backgroundTint="@color/primaryLightColor" />
     </LinearLayout>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        map:cameraZoom="8"
+        map:mapType="hybrid"
+        map:uiCompass="true"
+        map:cameraTargetLat="54"
+        map:cameraTargetLng="28"
+        map:uiZoomControls="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>

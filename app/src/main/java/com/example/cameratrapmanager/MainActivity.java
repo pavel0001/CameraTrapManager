@@ -1,11 +1,18 @@
 package com.example.cameratrapmanager;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,18 +21,21 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import com.bumptech.glide.Glide;
 import com.example.cameratrapmanager.MmsLoader.LoadLastMmsImage;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,28 +43,34 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String NOTIFICATION_CHANNEL_ID = "MainChannel";
+    //private static final int NOTIFICATION_CHANNEL_ID = 214;
+    private static final CharSequence NOTIFICATION_CHANEL_NAME = "CameraNot";
+    private static final String NOTIFICATION_CHANNEL_DESC = "Notification about new mms";
+    public static boolean FLAG_STATUS_LOAD = false;
     RecyclerView recyclerView;
     public static ArrayList<TrapList> trapList;
     public static LatLng pos;
     public static MyRecyclerViewAdapter adapter;
-    View.OnClickListener onClck, onClckDelete;
+    View.OnClickListener onClck, onClckDelete, onClckMap;
     private static final int MY_PERMISSIONS_REQUEST_CODE =0 ;
-    public static final  String TAG = "MyLog";
+    public static final  String TAG = "MyTag";
     public static int FIRST_SWOU_ADD_DIALOG = 0;
     FloatingActionButton btnAdd;
     public static SmsManager smsManager;
     MyDao myDao;
+    static Handler handler;
     TrapListDatabase db;
-
-
-
-
+    public int flag = 0;
+    final int NOTIFICATION_STORAGE = 356;
+    NotificationManager notifManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        notifManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        createNotificationChannel();
         db = TrapListDatabase.getDatabase(this);
         myDao = db.myDao();
         trapList = new ArrayList<TrapList>();
@@ -80,21 +96,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }, MY_PERMISSIONS_REQUEST_CODE);
         }
 
+
+/*        ItemTouchHelper mIth = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                        ItemTouchHelper.LEFT) {
+                    public boolean onMove(RecyclerView recyclerView,
+                                          ViewHolder viewHolder, ViewHolder target) {
+                        final int fromPos = viewHolder.getAdapterPosition();
+                        final int toPos = target.getAdapterPosition();
+                        // move item in `fromPos` to `toPos` in adapter.
+                        return true;// true if moved, false otherwise
+                    }
+                    public void onSwiped(ViewHolder viewHolder, int direction) {
+                        // remove from adapter
+                    }
+                });*/
     }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG,"onStart mainActivity" );
-        updateImgToAllCameres(this);
-
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -104,16 +121,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 myDao.updateTrap(x);
         }
         try {
-            if (myDao != null) {
+            if (myDao != null && flag == 0) {
                 ArrayList<TrapList> tmp = (ArrayList<TrapList>) myDao.getAll();
                 trapList.clear();
                 for( TrapList x: tmp){
                     trapList.add(new TrapList(x));
                 }
+                Log.i(TAG, "updateImgToAllCameres  onResume");
+                updateImgToAllCameres(this);
+                flag = 1;
             }
         }
         catch (Exception e){
-            Log.d(TAG, "Error load DB");
+            Log.i(TAG, "Error load DB");
         }
         adapter.notifyDataSetChanged();
       if(trapList.isEmpty() && FIRST_SWOU_ADD_DIALOG == 0) {
@@ -121,12 +141,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           FIRST_SWOU_ADD_DIALOG = 1;
         }
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     @Override
     public void onClick(View view) {
         switch(view.getId()){
@@ -146,8 +160,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 String number = data.getStringExtra("number");
-                /*Double lat = Double.parseDouble(data.getStringExtra("lat"));
-                Double longi = Double.parseDouble(data.getStringExtra("longi"));*/
                 if(pos != null) {
                     trapList.add(new TrapList(number, pos));
                 }
@@ -155,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     trapList.add(new TrapList(number));
                 }
                 if( ! trapList.isEmpty()) {
+                    trapList.get(trapList.size()-1).setFLAG_LOAD(true);
                     myDao.insertAll(trapList.get(trapList.size() - 1));
                     adapter.notifyDataSetChanged();
                 }
@@ -162,20 +175,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else {
                 Toast.makeText(this, "Cancel",Toast.LENGTH_SHORT).show();
             }
-
         }
         else {
         }
     }
     public static void updateImgToAllCameres(Context context){
+
         final LoadLastMmsImage loader = new LoadLastMmsImage(context);
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    for(TrapList x: trapList) {
+                    x.setFLAG_LOAD(true);
+                }
                     for (int i = 0; i < trapList.size(); i++) {
-                        Uri uri = loader.writeAllMms(trapList.get(i).getNumber());
-                        trapList.get(i).setUri(uri.toString());
+                        ArrayList<Uri> tmp = loader.writeAllMms(trapList.get(i).getNumber());
+                        trapList.get(i).setListUri(tmp);
+                        trapList.get(i).setFLAG_LOAD(false);
+                        Runnable rnbl = new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        };
+                        handler = new Handler(Looper.getMainLooper());
+                        handler.post(rnbl);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -187,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void refreshCamera(String number){
         Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
         smsManager.sendTextMessage(number, null, "*160#", null, null);
+       // showNot("Camera "+number+" is refreshing");
 
     }
     public static void sendCommandToCamera(String number, String command){
@@ -213,13 +239,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-
-
     class MyViewHolder extends ViewHolder{
         LinearLayout allLayout;
         TextView txtLabel, txtBat, txtStor, txtSignal, txtPos;
         ImageButton btnRef, btnDelete;
-        ImageView imgIcon;
+        ImageView imgIcon, imgGps;
+        ProgressBar prgrssBar;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             allLayout = (LinearLayout) findViewById(R.id.imgBtnDelete);
@@ -231,6 +256,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             btnRef = (ImageButton) itemView.findViewById(R.id.btnRef);
             imgIcon = (ImageView) itemView.findViewById(R.id.imgIcon);
             btnDelete = (ImageButton) itemView.findViewById(R.id.btnDelete);
+            imgGps = (ImageView) itemView.findViewById(R.id.imgGps);
+            prgrssBar = (ProgressBar) itemView.findViewById(R.id.prgrssBar);
         }
     }
     class MyRecyclerViewAdapter extends Adapter<MyViewHolder>{
@@ -238,9 +265,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(final View view) {
                 int itemPosition = recyclerView.getChildLayoutPosition(view);
-                Intent intent = new Intent(getApplicationContext(), IndividualCameraActivity.class);
-                intent.putExtra("position",itemPosition );
-                startActivity(intent);
+                if(trapList.get(itemPosition).isFLAG_LOAD()){
+                    Toast.makeText(getApplicationContext(),"Loading, try later", Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    Intent intent = new Intent(getApplicationContext(), IndividualCameraActivity.class);
+                    intent.putExtra("position", itemPosition);
+                    startActivity(intent);
+                }
             }
         };
         @NonNull
@@ -266,27 +299,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     deleteCamera(myViewHolder.getAdapterPosition());
                 }
             };
+            onClckMap = new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    int pos = myViewHolder.getAdapterPosition();
+                    Intent intent = new Intent(getApplicationContext(), ShowMapWithTrapActivity.class);
+                    intent.putExtra("number", trapList.get(pos).getNumber());
+                    startActivity(intent);
+
+                }
+            };
             myViewHolder.btnDelete.setOnClickListener(onClckDelete);
             myViewHolder.btnRef.setOnClickListener(onClck);
+            myViewHolder.imgGps.setOnClickListener(onClckMap);
             return myViewHolder;
         }
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        TrapList elementsList = trapList.get(holder.getAdapterPosition());
-        holder.txtLabel.setText(elementsList.getNumber());
-        holder.txtBat.setText(elementsList.getBattery());
-        holder.txtSignal.setText(elementsList.getSignal());
-        holder.txtStor.setText(elementsList.getStorage());
-        holder.imgIcon.setImageResource(R.mipmap.ic_launcher_cameratrap_foreground);
-        //myDao.updateTrap(elementsList);
-
-
+            TrapList elementsList = trapList.get(holder.getAdapterPosition());
+            holder.txtLabel.setText(elementsList.getNumber());
+            holder.txtBat.setText(elementsList.getBattery());
+            holder.txtSignal.setText(elementsList.getSignal());
+            holder.txtStor.setText(elementsList.getStorage());
+            if (elementsList.getListUri().size() > 0) {
+                holder.prgrssBar.setVisibility(View.INVISIBLE);
+                Glide.with(getApplicationContext())
+                        .load(elementsList.getListUri().get(0))
+                        .placeholder(R.mipmap.ic_launcher_cameratrap_foreground)
+                        .centerCrop()
+                        .into(holder.imgIcon);
+            } else {
+                holder.imgIcon.setImageResource(R.color.primaryColor);
+                holder.prgrssBar.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
         public int getItemCount() {
             return trapList.size();
+        }
+    }
+   void showNot(String text){
+            final Intent contentIntent = new Intent(getApplicationContext(), MainActivity.class);
+            final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_STORAGE, contentIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            final Notification notification =
+                    new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
+                            .setAutoCancel(true)
+                            .setSmallIcon(R.mipmap.ic_launcher_cameratrap_foreground)
+                            .setContentTitle("CameraTrap Manager")
+                            .setContentText(text)
+                            .setDefaults(Notification.DEFAULT_SOUND)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setContentIntent(pendingIntent)
+                            .build();
+            notifManager.notify(NOTIFICATION_STORAGE, notification);
+
+    }
+    private void createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel =
+                    new NotificationChannel(
+                            NOTIFICATION_CHANNEL_ID,
+                            NOTIFICATION_CHANEL_NAME,
+                            NotificationManager.IMPORTANCE_DEFAULT);
+                    channel.setDescription(NOTIFICATION_CHANNEL_DESC);
+                    NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                    notificationManager.createNotificationChannel(channel);
         }
     }
 }

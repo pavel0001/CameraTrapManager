@@ -1,20 +1,21 @@
 package com.example.cameratrapmanager;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.maps.model.LatLng;
+
+import static com.example.cameratrapmanager.MainActivity.updateImgToAllCameres;
 
 public class ActivityAddCamera extends AppCompatActivity implements View.OnClickListener {
     EditText edtNumber, edtDegFirst, edtMinFirst, edtSecFirst, edtDegSecnd, edtMinSecnd, edtSecSecnd;
@@ -49,11 +50,13 @@ public class ActivityAddCamera extends AppCompatActivity implements View.OnClick
                         try {
                             Intent intent = new Intent();
                             intent.putExtra("number", edtNumber.getText().toString());
-                            if (!edtDegFirst.getText().equals("") && !edtDegSecnd.getText().equals("")) {
-                                MainActivity.pos = new LatLng(Double.parseDouble(edtDegFirst.getText().toString()),
+                            if (!edtDegFirst.getText().equals("") && !edtDegSecnd.getText().equals("") && ! edtDegFirst.getText().toString().isEmpty() ) {
+                                MainActivity.pos = new LatLng(
+                                        Double.parseDouble(edtDegFirst.getText().toString()),
                                         Double.parseDouble(edtDegSecnd.getText().toString()));
                             }
                             setResult(RESULT_OK, intent);
+                            updateImgToAllCameres(getApplicationContext());
                             finish();
                         } catch (NullPointerException e) {
                             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();

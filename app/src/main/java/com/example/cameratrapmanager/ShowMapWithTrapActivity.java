@@ -97,6 +97,7 @@ public class ShowMapWithTrapActivity extends AppCompatActivity implements OnMapR
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         map = googleMap;
+
        MarkerOptions[] markers = new MarkerOptions[markList.size()];
         for (int i = 0; i < markList.size(); i++) {
 /*            Bitmap bitmap = null;

@@ -12,3 +12,5 @@ All data about added camera trap save at device in Room database
 # Recycler View & View Pager 2
 The main screen is recycler view where each elements is clicable. After touch elements from main frame's recycler view, user move to individual_cameratrap_activity where we can see last 10 images (they contains in view pager2) from camera and send command to her for set preferences.
 ......(readme will be updating)
+![alt text](photo_2020-10-16_09-40-43.jpg "Main activity")
+![alt text](photo_2020-10-16_09-40-45.jpg "Secend activity")
